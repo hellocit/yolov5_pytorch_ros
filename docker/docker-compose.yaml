@@ -7,15 +7,13 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ~/.Xauthority:/root/.Xauthority:rw
       - /tmp/.docker.$USER.xauth:/tmp/.docker.xauth:ro
-  ddrnet:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  yolo:
     shm_size: '8gb'
     image: yolo/pytorch:1.7.0-cuda11.2.2-cudnn8-runtime
     network_mode: "host"
     container_name: yolo
     tty: true
+
     runtime: nvidia
     group_add:
       - video
@@ -26,7 +24,6 @@ services:
       - QT_X11_NO_MITSHM=1
     volumes:
       - ~/share:/root/share:rw
-      - ~/workspace/yolov5_pytorch_ros:/root/yolo_ws/src/yolov5_pytorch_ros:rw
     volumes_from:
       - xwindow
     command: /bin/bash
