@@ -6,6 +6,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 # Python imports
 import numpy as np
+import cv2
 
 # ROS imports
 import rospy
@@ -36,10 +37,6 @@ from utils.general import (apply_classifier, check_img_size,
 from utils.plots import plot_one_box
 # util + model imports
 from utils.torch_utils import load_classifier, select_device, time_synchronized
-
-import sys
-sys.path.remove('/opt/ros/melodic/lib/python2.7/dist-packages')
-import cv2
 
 package = RosPack()
 package_path = package.get_path('yolov5_pytorch_ros')
