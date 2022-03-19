@@ -1,4 +1,26 @@
-# yolov5_pytorch_ros
+# yolov5_pytorch_ros  
+This package accompanies software from the following repositories  
+https://github.com/open-rdc/scenario_navigation  
+
+### Execute
+```
+docker run -it --net host --name roscore ros:melodic
+
+cd ~/catkin_ws/src/yolov5_pytorch_ros/docker
+docker-compose up -d
+docker exec -it yolo bash
+mkdir -p catkin_ws/src
+cd catkin_ws/src
+catkin_init_workspace
+git clone https://github.com/open-rdc/yolov5_pytorch_ros
+cd ..
+catkin_make
+source ~/catkin_ws/devel/setup.bash
+roslaunch yolov5_pytorch_ros detector_action.launch
+```
+
+---
+
 This package provides a ROS wrapper for YOLOv5 based on [PyTorch-YOLOv5](v). The package has NOT been tested yet.
 
 **Authors**: Vasileios Vasilopoulos (<vvasilo@seas.upenn.edu>), Georgios Pavlakos (<pavlakos@seas.upenn.edu>)
