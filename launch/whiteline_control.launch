@@ -1,3 +1,0 @@
-<launch>
-  <node name="control" pkg="yolov5_pytorch_ros" type="yolo_control_obstacle_stop.py" output="screen"/>
-</launch>
