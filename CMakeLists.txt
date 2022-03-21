@@ -44,6 +44,3 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
 )
 
-add_executable(push_image_action src/push_image_action.cpp)
-add_dependencies(push_image_action ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(push_image_action ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
