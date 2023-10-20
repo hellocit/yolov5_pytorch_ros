@@ -37,6 +37,7 @@ from utils.torch_utils import load_classifier, select_device, time_synchronized
 package = RosPack()
 package_path = package.get_path('yolov5_pytorch_ros')
 
+detect_box = False
 
 class Detector:
     def __init__(self):
@@ -115,8 +116,11 @@ class Detector:
         self.published_image_topic = rospy.get_param('~detections_image_topic')
 
         # Define subscribers
-        self.image_sub = rospy.Subscriber(
-            self.image_topic, Image, self.image_cb, queue_size=1, buff_size=2**24)
+        if detect_box == True:
+            self.image_sub = rospy.Subscriber(
+                self.image_topic, Image, self.image_cb, queue_size=1, buff_size=2**24)
+        else:
+            pass
 
         # Define publishers
         self.pub_ = rospy.Publisher(
@@ -248,6 +252,5 @@ class Detector:
 
 if __name__ == '__main__':
     rospy.init_node('detector')
-
     # Define detector object
     dm = Detector()
