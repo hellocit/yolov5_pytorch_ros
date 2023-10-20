@@ -3,7 +3,7 @@
     <!-- Camera topic and weights, config and classes files -->
     <!-- <arg name="image_topic"	                default="/image/mercator"/> -->
     <arg name="image_topic"	                default="/usb_cam/image_raw"/>
-    <arg name="weights_path"	            default="$(find yolov5_pytorch_ros)/weights/yolov5l_4_350.pt"/>
+    <arg name="weights_path"	            default="$(find yolov5_pytorch_ros)/weights/20230907s_8_350.pt"/>
     <!-- <arg name="weights_path"	            default="$(find yolov5_pytorch_ros)/weights/0826_detect_landmark.pt"/> -->
 
     <!-- Published topics -->
