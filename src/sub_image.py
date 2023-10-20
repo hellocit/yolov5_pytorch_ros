@@ -37,6 +37,7 @@ from utils.torch_utils import load_classifier, select_device, time_synchronized
 package = RosPack()
 package_path = package.get_path('yolov5_pytorch_ros')
 
+unknown_name = True
 
 class Detector:
     def __init__(self):
@@ -129,60 +130,64 @@ class Detector:
         rospy.spin()
 
     def image_cb(self, data):
+        if unknown_name == True:
         # Convert the image to OpenCV
-        try:
-            self.cv_img = self.bridge.imgmsg_to_cv2(data, "rgb8")
-        except CvBridgeError as e:
-            print(e)
-        # Initialize detection results
+            try:
+                self.cv_img = self.bridge.imgmsg_to_cv2(data, "rgb8")
+            except CvBridgeError as e:
+                print(e)
+            # Initialize detection results
 
-        detection_results = BoundingBoxes()
-        detection_results.header = data.header
-        detection_results.image_header = data.header
-        input_img = self.preprocess(self.cv_img)
-        input_img = Variable(input_img.type(torch.cuda.HalfTensor))
+            detection_results = BoundingBoxes()
+            detection_results.header = data.header
+            detection_results.image_header = data.header
+            input_img = self.preprocess(self.cv_img)
+            input_img = Variable(input_img.type(torch.cuda.HalfTensor))
 
-        # Get detections from network
-        with torch.no_grad():
-            detections = self.model(input_img)[0]
-            detections = non_max_suppression(detections, self.conf_thres, self.iou_thres,
-                                             classes=self.classes, agnostic=self.agnostic_nms)
+            # Get detections from network
+            with torch.no_grad():
+                detections = self.model(input_img)[0]
+                detections = non_max_suppression(detections, self.conf_thres, self.iou_thres,
+                                            classes=self.classes, agnostic=self.agnostic_nms)
 
-        # Parse detections
-        if detections[0] is not None:
-            for detection in detections[0]:
-                # Get xmin, ymin, xmax, ymax, confidence and class
-                xmin, ymin, xmax, ymax, conf, det_class = detection
-                pad_x = max(self.h - self.w, 0) * \
-                    (self.network_img_size/max(self.h, self.w))
-                pad_y = max(self.w - self.h, 0) * \
-                    (self.network_img_size/max(self.h, self.w))
-                unpad_h = self.network_img_size-pad_y
-                unpad_w = self.network_img_size-pad_x
-                xmin_unpad = ((xmin-pad_x//2)/unpad_w)*self.w
-                xmax_unpad = ((xmax-xmin)/unpad_w)*self.w + xmin_unpad
-                ymin_unpad = ((ymin-pad_y//2)/unpad_h)*self.h
-                ymax_unpad = ((ymax-ymin)/unpad_h)*self.h + ymin_unpad
+            # Parse detections
+            if detections[0] is not None:
+                for detection in detections[0]:
+                    # Get xmin, ymin, xmax, ymax, confidence and class
+                    xmin, ymin, xmax, ymax, conf, det_class = detection
+                    pad_x = max(self.h - self.w, 0) * \
+                        (self.network_img_size/max(self.h, self.w))
+                    pad_y = max(self.w - self.h, 0) * \
+                        (self.network_img_size/max(self.h, self.w))
+                    unpad_h = self.network_img_size-pad_y
+                    unpad_w = self.network_img_size-pad_x
+                    xmin_unpad = ((xmin-pad_x//2)/unpad_w)*self.w
+                    xmax_unpad = ((xmax-xmin)/unpad_w)*self.w + xmin_unpad
+                    ymin_unpad = ((ymin-pad_y//2)/unpad_h)*self.h
+                    ymax_unpad = ((ymax-ymin)/unpad_h)*self.h + ymin_unpad
 
-                # Populate darknet message
-                detection_msg = BoundingBox()
-                detection_msg.xmin = int(xmin_unpad)
-                detection_msg.xmax = int(xmax_unpad)
-                detection_msg.ymin = int(ymin_unpad)
-                detection_msg.ymax = int(ymax_unpad)
-                detection_msg.probability = float(conf)
-                detection_msg.Class = self.names[int(det_class)]
+                    # Populate darknet message
+                    detection_msg = BoundingBox()
+                    detection_msg.xmin = int(xmin_unpad)
+                    detection_msg.xmax = int(xmax_unpad)
+                    detection_msg.ymin = int(ymin_unpad)
+                    detection_msg.ymax = int(ymax_unpad)
+                    detection_msg.probability = float(conf)
+                    detection_msg.Class = self.names[int(det_class)]
 
-                # Append in overall detection message
-                detection_results.bounding_boxes.append(detection_msg)
+                    # Append in overall detection message
+                    detection_results.bounding_boxes.append(detection_msg)
 
-        # Publish detection results
-        self.pub_.publish(detection_results)
+            # Publish detection results
+            self.pub_.publish(detection_results)
 
-        # Visualize detection results
-        if (self.publish_image):
-            self.visualize_and_publish(detection_results, self.cv_img)
-        return True
+            # Visualize detection results
+            if (self.publish_image):
+                self.visualize_and_publish(detection_results, self.cv_img)
+                return True
+            else:
+                pass
+
 
     def preprocess(self, img):
         # Extract image and shape
