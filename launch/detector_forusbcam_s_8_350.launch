@@ -12,7 +12,7 @@
     <arg name="detections_image_topic"      default="detections_image_topic"/>
 
     <!-- Detection confidence -->
-    <arg name="confidence"                  default="0.6"/>
+    <arg name="confidence"                  default="0.2"/>
 
     <!-- Node -->
     <node name="detector" pkg="yolov5_pytorch_ros" type="sub_image.py" output="screen" respawn="true">
