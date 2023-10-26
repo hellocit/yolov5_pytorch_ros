@@ -41,6 +41,7 @@ unknown_name = True
 
 class Detector:
     def __init__(self):
+        rospy.init_node('detector')
         # Load weights parameter
         self.weights_path = rospy.get_param('~weights_path')
         rospy.loginfo("Found weights, loading %s", self.weights_path)
@@ -252,7 +253,13 @@ class Detector:
 
 
 if __name__ == '__main__':
-    rospy.init_node('detector')
+    # rospy.init_node('detector')
 
     # Define detector object
-    dm = Detector()
+    # dm = Detector()
+
+    rg = Detector()
+    DURATION = 0.1
+    r = rospy.Rate(1 / DURATION)
+    while not rospy.is_shutdown():
+        r.sleep()
